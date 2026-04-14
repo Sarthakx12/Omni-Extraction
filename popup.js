@@ -248,6 +248,111 @@ document.addEventListener('DOMContentLoaded', () => {
           showToast("Text exported!");
       });
     });
+
+    document.getElementById('exportPdfBtn').addEventListener('click', async (e) => {
+        if (!currentText && currentImages.length === 0) return;
+        
+        const btn = e.target;
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Generating PDF...';
+        
+        try {
+            const tempDiv = document.createElement('div');
+            tempDiv.style.fontFamily = "'Inter', sans-serif, -apple-system, BlinkMacSystemFont";
+            tempDiv.style.color = '#1f2937';
+            tempDiv.style.padding = '20px';
+            tempDiv.style.lineHeight = '1.6';
+            
+            const h1 = document.createElement('h1');
+            h1.textContent = 'Extracted Notes';
+            h1.style.borderBottom = '2px solid #e5e7eb';
+            h1.style.paddingBottom = '10px';
+            h1.style.marginBottom = '20px';
+            tempDiv.appendChild(h1);
+            
+            if (currentText) {
+                const textDiv = document.createElement('div');
+                textDiv.style.whiteSpace = 'pre-wrap';
+                textDiv.style.marginBottom = '30px';
+                textDiv.style.fontSize = '12px';
+                textDiv.textContent = currentText;
+                tempDiv.appendChild(textDiv);
+            }
+            
+            if (currentImages.length > 0) {
+                const imgTitle = document.createElement('h2');
+                imgTitle.textContent = 'Images';
+                imgTitle.style.borderBottom = '1px solid #e5e7eb';
+                imgTitle.style.paddingBottom = '5px';
+                imgTitle.style.marginBottom = '15px';
+                tempDiv.appendChild(imgTitle);
+
+                const imgContainer = document.createElement('div');
+                imgContainer.style.display = 'flex';
+                imgContainer.style.flexDirection = 'column';
+                imgContainer.style.gap = '20px';
+                imgContainer.style.alignItems = 'center';
+                
+                const limit = Math.min(currentImages.length, 50);
+                for (let i = 0; i < limit; i++) {
+                    const srcUrl = currentImages[i];
+                    const img = document.createElement('img');
+                    
+                    if (srcUrl.startsWith('data:')) {
+                        img.src = srcUrl;
+                    } else {
+                        // Workaround to ensure cross-origin images are loaded or bypassed gracefully if failed
+                        // Though typical html2pdf html2canvas has useCORS: true
+                        img.setAttribute('crossOrigin', 'anonymous');
+                        img.src = srcUrl;
+                    }
+                    
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '600px';
+                    img.style.objectFit = 'contain';
+                    img.style.borderRadius = '4px';
+                    imgContainer.appendChild(img);
+                }
+                tempDiv.appendChild(imgContainer);
+            }
+
+            const dateStr = new Date().toISOString().replace(/[:.]/g, '-');
+            let baseName = "webpage-notes";
+            
+            try {
+                const tabs = await new Promise(resolve => chrome.tabs.query({ active: true, currentWindow: true }, resolve));
+                if (tabs && tabs[0] && tabs[0].title) {
+                    baseName = tabs[0].title.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                    // truncate long titles
+                    if (baseName.length > 50) baseName = baseName.substring(0, 50);
+                }
+            } catch (e) {}
+
+            const filename = `${baseName}-${dateStr}.pdf`;
+            
+            const opt = {
+                margin:       15,
+                filename:     filename,
+                image:        { type: 'jpeg', quality: 0.95 },
+                html2canvas:  { scale: 2, useCORS: true, allowTaint: true, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            const pdfBlob = await html2pdf().set(opt).from(tempDiv).outputPdf('blob');
+            const url = URL.createObjectURL(pdfBlob);
+            chrome.downloads.download({ url: url, filename: filename, saveAs: true }, () => {
+                URL.revokeObjectURL(url);
+                showToast("PDF Export successful!");
+            });
+        } catch (err) {
+            console.error("PDF Generate Error:", err);
+            showToast("Error generating PDF");
+        } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    });
   
     document.getElementById('downloadImagesBtn').addEventListener('click', async (e) => {
       if (currentImages.length === 0 || typeof JSZip === 'undefined') return;
