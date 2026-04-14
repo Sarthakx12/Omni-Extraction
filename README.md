@@ -32,3 +32,8 @@ Because of Google's rate limitations, you need a Google Generative AI API Token 
 1. Create a free API Key via [Google AI Studio](https://aistudio.google.com/app/apikey) assuring that there is a proper attached billing profile.
 2. Open the `ai.js` file inside this project.
 3. Paste your new key directly inside `this.apiKey`. Make sure it works!
+
+## 📄 License & Copyright
+
+© 2026 Sarthak Verma. All rights reserved. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
