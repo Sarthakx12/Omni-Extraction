@@ -2,7 +2,9 @@
 
 OmniExtract is a modern, lightweight Google Chrome extension designed to instantly scrape, download, and intelligently process web content. Driven by a sleek premium dark-mode interface, it's capable of transforming messy web text into beautiful blog drafts natively via Google's Gemini Models.
 
-![OmniExtract Design](app_preview_placeholder.png)
+<p align="center">
+  <img src="icon128.png" alt="OmniExtract Logo" width="128">
+</p>
 
 ## 🌟 Key Features
 - **Precision Selection Mode**: Visually drag and drop across a webpage with an interactive crosshair to isolate precise text nodes and visual assets.
