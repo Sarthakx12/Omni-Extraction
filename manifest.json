@@ -1,12 +1,22 @@
 {
   "manifest_version": 3,
-  "name": "Webpage Extractor Pro",
-  "version": "2.0",
-  "description": "Extracts text and image URLs with advanced export features.",
+  "name": "OmniExtract - Download Web Images & Text",
+  "version": "1.0",
+  "description": "One-click tool to extract, copy, and download all text and images from any webpage into a ZIP or TXT file.",
   "permissions": ["activeTab", "scripting", "downloads", "storage"],
   "host_permissions": ["<all_urls>"],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
   },
   "content_scripts": [
     {

@@ -33,13 +33,35 @@ document.addEventListener('DOMContentLoaded', () => {
     loader.classList.remove('hidden');
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, { action: "extractContent" }, (response) => {
+      const activeTab = tabs[0];
+      
+      // Check for restricted URLs immediately before sending a message
+      if (activeTab.url && (activeTab.url.startsWith('chrome://') || activeTab.url.startsWith('edge://') || activeTab.url.startsWith('about:'))) {
+          loader.classList.add('hidden');
+          btnText.textContent = 'Cannot run on system pages';
+          setTimeout(() => { btnText.textContent = 'Extract Content'; extractBtn.disabled = false; }, 3000);
+          return;
+      }
+
+      chrome.tabs.sendMessage(activeTab.id, { action: "extractContent" }, (response) => {
         // Reset Loader
         loader.classList.add('hidden');
         extractBtn.disabled = false;
         
-        if (chrome.runtime.lastError || !response || !response.success) {
-            btnText.textContent = 'Failed. Try again.';
+        if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError.message);
+            // This error happens when the script isn't injected (e.g. extension just installed and page wasn't refreshed)
+            if (chrome.runtime.lastError.message.includes("Receiving end does not exist")) {
+                btnText.textContent = 'Pls refresh the page first!';
+            } else {
+                btnText.textContent = 'Failed. Try refreshing.';
+            }
+            setTimeout(() => btnText.textContent = 'Extract Content', 3000);
+            return;
+        }
+        
+        if (!response || !response.success) {
+            btnText.textContent = 'Extraction Failed. Try again.';
             setTimeout(() => btnText.textContent = 'Extract Content', 3000);
             return;
         }
