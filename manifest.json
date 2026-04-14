@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "OmniExtract - Download Web Images & Text",
-  "version": "1.0",
-  "description": "One-click tool to extract, copy, and download all text and images from any webpage into a ZIP or TXT file.",
+  "version": "2.0",
+  "description": "Extract entire pages or use Selection Mode to drag and drop text and images exactly where you want them.",
   "permissions": ["activeTab", "scripting", "downloads", "storage"],
   "host_permissions": ["<all_urls>"],
   "icons": {

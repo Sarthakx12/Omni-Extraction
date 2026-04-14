@@ -2,21 +2,39 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Extractor Pro</title>
+  <title>OmniExtract</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h2>Extractor Pro</h2>
+      <h2>OmniExtract</h2>
     </div>
     
-    <button id="extractBtn" class="btn-primary">
-      <span id="extractBtnText">Extract Content</span>
-      <div id="loader" class="spinner hidden"></div>
-    </button>
+    <!-- MODE TOGGLE UI -->
+    <div class="action-panel" id="actionPanel">
+      <div class="mode-desc">Choose an extraction mode:</div>
+      <div class="mode-buttons">
+          <button id="extractBtn" class="btn-primary">
+            <span id="extractBtnText">Extract Full Page</span>
+            <div id="loaderFull" class="spinner hidden"></div>
+          </button>
+          
+          <button id="selectContentBtn" class="btn-primary-alt">
+            <span id="selectBtnText">Select Content</span>
+          </button>
+      </div>
+    </div>
     
+    <div class="action-panel hidden" id="selectionActivePanel">
+      <div class="mode-desc selection-pulse">Interactive Selection Mode Active</div>
+      <p style="font-size:12px; margin:0 0 12px 0;">The popup closed. Drag an area on the webpage to select, then re-open this menu.</p>
+      <button id="cancelSelectionBtn" class="btn-secondary">Cancel Selection</button>
+    </div>
+    
+    <!-- RESULTS UI -->
     <div id="results" class="hidden fade-in">
+      <div class="results-header" id="resultsHeader">Results Found</div>
       <div class="stats-grid">
         <div class="stat-card">
           <h3 class="stat-title">Images</h3>
@@ -47,9 +65,10 @@
           <button id="downloadImagesBtn" class="btn-secondary">Download All (ZIP)</button>
         </div>
       </div>
+      
+      <button id="resetViewBtn" class="btn-tertiary" style="margin-top:16px;">Start Over</button>
     </div>
   </div>
-  <!-- JSZip is bundled for dependency-free vanila JS zip creation -->
   <script src="jszip.min.js"></script>
   <script src="popup.js"></script>
 </body>

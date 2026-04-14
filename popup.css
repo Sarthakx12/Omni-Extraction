@@ -1,6 +1,8 @@
 :root {
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --alt: #0ea5e9;
+  --alt-hover: #0284c7;
   --bg-color: #ffffff;
   --surface: #f8fafc;
   --text-main: #0f172a;
@@ -36,6 +38,40 @@ h2 {
   letter-spacing: -0.02em;
 }
 
+.action-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--radius);
+}
+
+.mode-desc {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  text-align: center;
+}
+
+.mode-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selection-pulse {
+  color: var(--alt);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
 button {
   display: flex;
   align-items: center;
@@ -54,7 +90,7 @@ button {
 .btn-primary {
   background-color: var(--primary);
   color: white;
-  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -62,14 +98,38 @@ button {
   transform: translateY(-1px);
 }
 
+.btn-primary-alt {
+  background-color: var(--alt);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2);
+}
+
+.btn-primary-alt:hover:not(:disabled) {
+  background-color: var(--alt-hover);
+  transform: translateY(-1px);
+}
+
 .btn-secondary {
-  background-color: var(--surface);
+  background-color: white;
   color: var(--text-main);
   border: 1px solid var(--border);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: var(--border);
+  background-color: var(--surface);
+  border-color: #cbd5e1;
+}
+
+.btn-tertiary {
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 8px;
+}
+
+.btn-tertiary:hover {
+  background: var(--surface);
+  color: var(--text-main);
 }
 
 button:disabled {
@@ -106,27 +166,35 @@ button:disabled {
 }
 
 #results {
-  margin-top: 24px;
+  margin-top: 16px;
+}
+
+.results-header {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+  color: var(--primary);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .stat-card {
   background: var(--surface);
-  padding: 16px;
+  padding: 12px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   text-align: center;
 }
 
 .stat-title {
-  margin: 0 0 6px 0;
-  font-size: 12px;
+  margin: 0 0 4px 0;
+  font-size: 11px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -134,7 +202,7 @@ button:disabled {
 
 .stat-value {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--primary);
 }
@@ -142,9 +210,9 @@ button:disabled {
 .tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 12px;
+  padding-bottom: 8px;
 }
 
 .tab-btn {
@@ -164,7 +232,7 @@ button:disabled {
 .tab-btn.active {
   background: var(--primary);
   color: white;
-  border-color: var(--primary);
+  border-radius: var(--radius);
 }
 
 .tab-content {
@@ -177,7 +245,7 @@ button:disabled {
 
 textarea {
   width: 100%;
-  height: 160px;
+  height: 140px;
   box-sizing: border-box;
   padding: 12px;
   border: 1px solid var(--border);
@@ -193,7 +261,7 @@ textarea {
 textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
 }
 
 .actions {
@@ -208,7 +276,7 @@ textarea:focus {
 }
 
 .image-list {
-  max-height: 160px;
+  max-height: 140px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -256,7 +324,7 @@ textarea:focus {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  direction: rtl; /* helps view extension nicely */
+  direction: rtl;
 }
 
 .img-link {
