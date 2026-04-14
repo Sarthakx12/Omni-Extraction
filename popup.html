@@ -1,74 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>OmniExtract</title>
+  <!-- Modern System Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h2>OmniExtract</h2>
-    </div>
+  <div class="app-container">
+    
+    <header class="app-header">
+      <div class="logo-container">
+        <div class="logo-icon"></div>
+        <h1>OmniExtract</h1>
+      </div>
+      <p class="subtitle">Extract text and images instantly</p>
+    </header>
     
     <!-- MODE TOGGLE UI -->
-    <div class="action-panel" id="actionPanel">
-      <div class="mode-desc">Choose an extraction mode:</div>
-      <div class="mode-buttons">
-          <button id="extractBtn" class="btn-primary">
-            <span id="extractBtnText">Extract Full Page</span>
+    <div class="panel" id="actionPanel">
+      <h3 class="panel-title">Extraction Mode</h3>
+      <div class="button-group">
+          <button id="extractBtn" class="btn btn-primary">
+            <span class="btn-text" id="extractBtnText">Extract Full Page</span>
             <div id="loaderFull" class="spinner hidden"></div>
           </button>
           
-          <button id="selectContentBtn" class="btn-primary-alt">
-            <span id="selectBtnText">Select Content</span>
+          <button id="selectContentBtn" class="btn btn-secondary">
+            <span class="btn-text" id="selectBtnText">Select Area</span>
           </button>
       </div>
     </div>
     
-    <div class="action-panel hidden" id="selectionActivePanel">
-      <div class="mode-desc selection-pulse">Interactive Selection Mode Active</div>
-      <p style="font-size:12px; margin:0 0 12px 0;">The popup closed. Drag an area on the webpage to select, then re-open this menu.</p>
-      <button id="cancelSelectionBtn" class="btn-secondary">Cancel Selection</button>
+    <!-- SELECTION ACTIVE STATE -->
+    <div class="panel hidden pulse-glow" id="selectionActivePanel">
+      <div class="state-indicator">
+        <div class="recording-dot"></div>
+        <span class="state-text">Selection Mode Active</span>
+      </div>
+      <p class="state-desc">The popup has closed. Click and drag on the webpage to select elements, then return here.</p>
+      <button id="cancelSelectionBtn" class="btn btn-secondary w-full">Cancel Selection</button>
     </div>
     
     <!-- RESULTS UI -->
-    <div id="results" class="hidden fade-in">
-      <div class="results-header" id="resultsHeader">Results Found</div>
+    <div class="panel hidden fade-in" id="results">
+      <div class="results-header">
+        <h3 id="resultsHeader">Results</h3>
+        <button id="resetViewBtn" class="btn-icon" title="Clear & Restart">↺</button>
+      </div>
+
       <div class="stats-grid">
         <div class="stat-card">
-          <h3 class="stat-title">Images</h3>
-          <p id="imageCount" class="stat-value">0</p>
+          <span class="stat-label">Images</span>
+          <span class="stat-value" id="imageCount">0</span>
         </div>
         <div class="stat-card">
-          <h3 class="stat-title">Text Length</h3>
-          <p id="textCount" class="stat-value">0</p>
+          <span class="stat-label">Text Characters</span>
+          <span class="stat-value" id="textCount">0</span>
         </div>
       </div>
       
-      <div class="tabs">
-        <button class="tab-btn active" data-target="text-content">Text</button>
-        <button class="tab-btn" data-target="img-content">Images</button>
+      <!-- Animated Tabs -->
+      <div class="tabs-container">
+        <div class="tabs">
+          <button class="tab-btn active" data-target="text-content">Text</button>
+          <button class="tab-btn" data-target="img-content">Images</button>
+          <div class="tab-indicator" id="tabIndicator"></div>
+        </div>
       </div>
 
       <div class="tab-content active" id="text-content">
-        <textarea id="extractedText" readonly placeholder="No text found..."></textarea>
-        <div class="actions">
-          <button id="copyTextBtn" class="btn-secondary">Copy Text</button>
-          <button id="exportTextBtn" class="btn-secondary">Export .txt</button>
+        <textarea id="extractedText" readonly spellcheck="false" placeholder="No text found in selection."></textarea>
+        <div class="action-row mt-3">
+          <button id="copyTextBtn" class="btn btn-secondary flex-1">Copy Text</button>
+          <button id="exportTextBtn" class="btn btn-secondary flex-1">Export .txt</button>
         </div>
       </div>
       
       <div class="tab-content" id="img-content">
         <div id="extractedImages" class="image-list"></div>
-        <div class="actions">
-          <button id="downloadImagesBtn" class="btn-secondary">Download All (ZIP)</button>
+        <div class="action-row mt-3">
+          <button id="downloadImagesBtn" class="btn btn-primary w-full">Download All (ZIP)</button>
         </div>
       </div>
-      
-      <button id="resetViewBtn" class="btn-tertiary" style="margin-top:16px;">Start Over</button>
     </div>
+    
   </div>
+
+  <!-- Action Toast -->
+  <div id="toast" class="toast hidden">Action completed</div>
+
   <script src="jszip.min.js"></script>
   <script src="popup.js"></script>
 </body>

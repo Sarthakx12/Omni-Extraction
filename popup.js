@@ -1,30 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // UI Elements
+    // Top Level Panels
     const actionPanel = document.getElementById('actionPanel');
     const selectionActivePanel = document.getElementById('selectionActivePanel');
     const resultsDiv = document.getElementById('results');
-    const resultsHeader = document.getElementById('resultsHeader');
     
+    // Core Buttons
     const extractBtn = document.getElementById('extractBtn');
     const extractBtnText = document.getElementById('extractBtnText');
     const loaderFull = document.getElementById('loaderFull');
-    
     const selectContentBtn = document.getElementById('selectContentBtn');
     const cancelSelectionBtn = document.getElementById('cancelSelectionBtn');
     const resetViewBtn = document.getElementById('resetViewBtn');
   
+    // Results Elements
+    const resultsHeader = document.getElementById('resultsHeader');
     const imageCountEl = document.getElementById('imageCount');
     const textCountEl = document.getElementById('textCount');
     const extractedTextEl = document.getElementById('extractedText');
     const extractedImagesEl = document.getElementById('extractedImages');
     
-    // Setup Tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    // Tab Interaction
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabIndicator = document.getElementById('tabIndicator');
+    
+    tabBtns.forEach((btn, index) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
         btn.classList.add('active');
         document.getElementById(btn.dataset.target).classList.add('active');
+        
+        // Move sliding indicator
+        tabIndicator.style.transform = `translateX(${index * 100}%)`;
       });
     });
   
@@ -32,7 +40,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentText = "";
     const formatNumber = num => num.toLocaleString();
   
-    // 1. Initial State Check
+    // Toast Notification System
+    const toast = document.getElementById('toast');
+    let toastTimeout;
+    
+    function showToast(message) {
+        toast.textContent = message;
+        toast.classList.remove('hidden');
+        
+        // Force reflow
+        void toast.offsetWidth;
+        toast.classList.add('show');
+        
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.classList.add('hidden'), 300); // Wait for transition
+        }, 2500);
+    }
+  
+    // Global initial mount
     initializeState();
 
     function showSystemPageError(btnLabel) {
@@ -48,30 +75,28 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const activeTab = tabs[0];
             if (!activeTab || !activeTab.id || (activeTab.url && activeTab.url.startsWith('chrome'))) {
-                return; // Wait for user interaction to show error explicitly
+                return;
             }
 
             chrome.tabs.sendMessage(activeTab.id, { action: "getSelectionState" }, (response) => {
-                if (chrome.runtime.lastError) return; // Script not injected yet
+                if (chrome.runtime.lastError) return;
 
                 if (response && response.success) {
                     if (response.isSelecting) {
-                        // User is currently selecting right now
                         actionPanel.classList.add('hidden');
                         selectionActivePanel.classList.remove('hidden');
                         resultsDiv.classList.add('hidden');
                     } else if (response.currentSelection) {
-                        // User finished selecting, display results
                         actionPanel.classList.add('hidden');
                         selectionActivePanel.classList.add('hidden');
-                        renderResults(response.currentSelection.text, response.currentSelection.images, "Manual Selection Results");
+                        renderResults(response.currentSelection.text, response.currentSelection.images, "Selected Content");
                     }
                 }
             });
         });
     }
 
-    // 2. Full Page Extraction
+    // Extraction Engine
     extractBtn.addEventListener('click', () => {
         extractBtn.disabled = true;
         extractBtnText.textContent = 'Extracting...';
@@ -89,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (chrome.runtime.lastError) {
                     const msg = chrome.runtime.lastError.message;
-                    extractBtnText.textContent = msg.includes("Receiving end does not exist") ? 'Pls refresh the page first!' : 'Failed. Try refreshing.';
+                    extractBtnText.textContent = msg.includes("Receiving end does not exist") ? 'Please refresh webpage' : 'Failed. Try refreshing.';
                     setTimeout(() => extractBtnText.textContent = 'Extract Full Page', 3000);
                     return;
                 }
@@ -102,13 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 extractBtnText.textContent = 'Extract Full Page';
                 actionPanel.classList.add('hidden');
-                
-                renderResults(response.text, response.images, "Full Page Results");
+                renderResults(response.text, response.images, "Full Page Extraction");
+                showToast("Extraction Successful!");
             });
         });
     });
 
-    // 3. Enter Selection Mode
     selectContentBtn.addEventListener('click', () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const activeTab = tabs[0];
@@ -118,17 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             chrome.tabs.sendMessage(activeTab.id, { action: "enterSelectionMode" }, (response) => {
                 if (chrome.runtime.lastError) {
-                    document.getElementById('selectBtnText').textContent = 'Pls refresh page first!';
-                    setTimeout(() => document.getElementById('selectBtnText').textContent = 'Select Content', 3000);
+                    document.getElementById('selectBtnText').textContent = 'Please refresh webpage';
+                    setTimeout(() => document.getElementById('selectBtnText').textContent = 'Select Area', 3000);
                     return;
                 }
-                // Selection mode successfully started. Close popup so user can use the screen.
                 window.close();
             });
         });
     });
 
-    // 4. Cancel Selection Mode
     cancelSelectionBtn.addEventListener('click', () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             chrome.tabs.sendMessage(tabs[0].id, { action: "cancelSelectionMode" });
@@ -137,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 5. Reset View
     resetViewBtn.addEventListener('click', () => {
         resultsDiv.classList.add('hidden');
         actionPanel.classList.remove('hidden');
@@ -146,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
   
-    // Main UI Renderer
+    // Renderer
     function renderResults(text, images, title) {
         resultsHeader.textContent = title;
         currentImages = images || [];
@@ -158,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         extractedImagesEl.innerHTML = '';
         if (currentImages.length === 0) {
-            extractedImagesEl.innerHTML = '<div class="empty-state">No images found in your selection.</div>';
+            extractedImagesEl.innerHTML = '<div class="empty-state">No images found.</div>';
             document.getElementById('downloadImagesBtn').disabled = true;
         } else {
             document.getElementById('downloadImagesBtn').disabled = false;
@@ -202,14 +223,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsDiv.classList.remove('hidden');
     }
   
-    // 6. Clipboard & Export Actions
-    document.getElementById('copyTextBtn').addEventListener('click', (e) => {
+    // Actions
+    document.getElementById('copyTextBtn').addEventListener('click', () => {
       if (!currentText) return;
       navigator.clipboard.writeText(currentText).then(() => {
-          const btn = e.target;
-          const originalText = btn.textContent;
-          btn.textContent = 'Copied!';
-          setTimeout(() => btn.textContent = originalText, 2000);
+          showToast("Copied to clipboard!");
       });
     });
   
@@ -217,7 +235,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!currentText) return;
       const blob = new Blob([currentText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
-      chrome.downloads.download({ url: url, filename: 'extracted_text.txt', saveAs: true }, () => URL.revokeObjectURL(url));
+      chrome.downloads.download({ url: url, filename: 'extracted_text.txt', saveAs: true }, () => {
+          URL.revokeObjectURL(url);
+          showToast("Text exported!");
+      });
     });
   
     document.getElementById('downloadImagesBtn').addEventListener('click', async (e) => {
@@ -234,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           for (let i = 0; i < currentImages.length; i++) {
               const url = currentImages[i];
+              // Support Base64 embedded UI nodes
               if(url.startsWith('data:')) {
                   try {
                       const arr = url.split(',');
@@ -280,11 +302,14 @@ document.addEventListener('DOMContentLoaded', () => {
               } catch (err) { }
           }
           
-          btn.textContent = 'Generating...';
+          btn.textContent = 'Generating Package...';
           const content = await zip.generateAsync({ type: "blob" });
           const outUrl = URL.createObjectURL(content);
           
-          chrome.downloads.download({ url: outUrl, filename: "extracted_images.zip", saveAs: true }, () => URL.revokeObjectURL(outUrl));
+          chrome.downloads.download({ url: outUrl, filename: "extracted_images.zip", saveAs: true }, () => {
+              URL.revokeObjectURL(outUrl);
+              showToast("ZIP Archive Downloaded!");
+          });
       } catch (err) {
           alert("ZIP Error");
       } finally {
