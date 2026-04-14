@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Webpage Extractor Pro",
+  "version": "2.0",
+  "description": "Extracts text and image URLs with advanced export features.",
+  "permissions": ["activeTab", "scripting", "downloads", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

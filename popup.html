@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Extractor Pro</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Extractor Pro</h2>
+    </div>
+    
+    <button id="extractBtn" class="btn-primary">
+      <span id="extractBtnText">Extract Content</span>
+      <div id="loader" class="spinner hidden"></div>
+    </button>
+    
+    <div id="results" class="hidden fade-in">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3 class="stat-title">Images</h3>
+          <p id="imageCount" class="stat-value">0</p>
+        </div>
+        <div class="stat-card">
+          <h3 class="stat-title">Text Length</h3>
+          <p id="textCount" class="stat-value">0</p>
+        </div>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab-btn active" data-target="text-content">Text</button>
+        <button class="tab-btn" data-target="img-content">Images</button>
+      </div>
+
+      <div class="tab-content active" id="text-content">
+        <textarea id="extractedText" readonly placeholder="No text found..."></textarea>
+        <div class="actions">
+          <button id="copyTextBtn" class="btn-secondary">Copy Text</button>
+          <button id="exportTextBtn" class="btn-secondary">Export .txt</button>
+        </div>
+      </div>
+      
+      <div class="tab-content" id="img-content">
+        <div id="extractedImages" class="image-list"></div>
+        <div class="actions">
+          <button id="downloadImagesBtn" class="btn-secondary">Download All (ZIP)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- JSZip is bundled for dependency-free vanila JS zip creation -->
+  <script src="jszip.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
