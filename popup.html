@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>OmniExtract</title>
-  <!-- Modern System Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
 </head>
@@ -66,10 +65,12 @@
         <div class="tabs">
           <button class="tab-btn active" data-target="text-content">Text</button>
           <button class="tab-btn" data-target="img-content">Images</button>
+          <button class="tab-btn ai-tab-btn" data-target="ai-content">AI Actions ✧</button>
           <div class="tab-indicator" id="tabIndicator"></div>
         </div>
       </div>
 
+      <!-- TEXT TAB -->
       <div class="tab-content active" id="text-content">
         <textarea id="extractedText" readonly spellcheck="false" placeholder="No text found in selection."></textarea>
         <div class="action-row mt-3">
@@ -78,19 +79,41 @@
         </div>
       </div>
       
+      <!-- IMAGES TAB -->
       <div class="tab-content" id="img-content">
         <div id="extractedImages" class="image-list"></div>
         <div class="action-row mt-3">
           <button id="downloadImagesBtn" class="btn btn-primary w-full">Download All (ZIP)</button>
         </div>
       </div>
+      
+      <!-- AI SMART MODE TAB -->
+      <div class="tab-content" id="ai-content">
+        <div class="ai-grid" id="aiButtonsGrid">
+          <button class="btn btn-secondary ai-btn" data-action="summarize">Summarize</button>
+          <button class="btn btn-secondary ai-btn" data-action="key_points">Key Points</button>
+          <button class="btn btn-secondary ai-btn" data-action="blog">Convert to Blog</button>
+          <button class="btn btn-secondary ai-btn" data-action="linkedin">LinkedIn Post</button>
+          <button class="btn btn-secondary ai-btn ai-btn-wide" data-action="tweet">Tweet Thread</button>
+        </div>
+        <div class="ai-output-container mt-3">
+          <textarea id="aiOutputText" readonly spellcheck="false" placeholder="Select an AI mode above to transform your text..."></textarea>
+          <div id="aiLoader" class="spinner-overlay hidden">
+             <div class="spinner"></div>
+          </div>
+        </div>
+        <div class="action-row mt-3">
+          <button id="copyAiTextBtn" class="btn btn-secondary flex-1" disabled>Copy Result</button>
+          <button id="exportAiTextBtn" class="btn btn-secondary flex-1" disabled>Export .txt</button>
+        </div>
+      </div>
+      
     </div>
-    
   </div>
 
-  <!-- Action Toast -->
   <div id="toast" class="toast hidden">Action completed</div>
 
+  <script src="ai.js"></script>
   <script src="jszip.min.js"></script>
   <script src="popup.js"></script>
 </body>

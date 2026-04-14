@@ -23,6 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabIndicator = document.getElementById('tabIndicator');
     
+    // AI Elements
+    const aiButtons = document.querySelectorAll('.ai-btn');
+    const aiOutputText = document.getElementById('aiOutputText');
+    const aiLoader = document.getElementById('aiLoader');
+    const copyAiTextBtn = document.getElementById('copyAiTextBtn');
+    const exportAiTextBtn = document.getElementById('exportAiTextBtn');
+    let currentAIResult = "";
+    
     tabBtns.forEach((btn, index) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -223,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsDiv.classList.remove('hidden');
     }
   
-    // Actions
+    // Actions - Standard Copying
     document.getElementById('copyTextBtn').addEventListener('click', () => {
       if (!currentText) return;
       navigator.clipboard.writeText(currentText).then(() => {
@@ -316,5 +324,59 @@ document.addEventListener('DOMContentLoaded', () => {
           btn.textContent = 'Download All (ZIP)';
           btn.disabled = false;
       }
+    });
+
+    // AI Action Handlers
+    aiButtons.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const action = btn.dataset.action;
+            if (!currentText || currentText.trim() === '') {
+                showToast("No extracted text to process!");
+                return;
+            }
+
+            // Lock UI
+            aiButtons.forEach(b => b.disabled = true);
+            aiLoader.classList.remove('hidden');
+            aiOutputText.value = '';
+            copyAiTextBtn.disabled = true;
+            exportAiTextBtn.disabled = true;
+            currentAIResult = "";
+
+            try {
+                // Call global AI engine
+                const result = await window.AI.processText(action, currentText);
+                currentAIResult = result;
+                aiOutputText.value = currentAIResult;
+                
+                showToast("Transformation Complete ✨");
+                copyAiTextBtn.disabled = false;
+                exportAiTextBtn.disabled = false;
+            } catch (err) {
+                aiOutputText.value = "[Error] " + err.message;
+                showToast("AI Processing failed");
+            } finally {
+                aiLoader.classList.add('hidden');
+                aiButtons.forEach(b => b.disabled = false);
+            }
+        });
+    });
+
+    // Output Result Actions
+    copyAiTextBtn.addEventListener('click', () => {
+        if (!currentAIResult) return;
+        navigator.clipboard.writeText(currentAIResult).then(() => {
+            showToast("AI Response copied!");
+        });
+    });
+
+    exportAiTextBtn.addEventListener('click', () => {
+        if (!currentAIResult) return;
+        const blob = new Blob([currentAIResult], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        chrome.downloads.download({ url: url, filename: 'ai_processed_content.txt', saveAs: true }, () => {
+            URL.revokeObjectURL(url);
+            showToast("AI document generated!");
+        });
     });
 });

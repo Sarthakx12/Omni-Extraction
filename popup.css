@@ -274,17 +274,19 @@ h1, h2, h3, p { margin: 0; }
   background: transparent; border: none;
   color: var(--text-muted);
   font-size: 13px; font-family: inherit; font-weight: 600;
-  padding: 8px 16px; cursor: pointer; transition: color 0.3s;
+  padding: 8px 6px; cursor: pointer; transition: color 0.3s;
   flex: 1; text-align: center;
   position: relative; z-index: 2;
 }
 .tab-btn:hover { color: var(--text-main); }
 .tab-btn.active { color: white; }
+.ai-tab-btn { color: #ec4899; }
+.ai-tab-btn.active { color: #fdf2f8; text-shadow: 0 0 8px rgba(236,72,153,0.5); }
 
 .tab-indicator {
   position: absolute;
   bottom: -1px; left: 0;
-  height: 2px; width: 50%;
+  height: 2px; width: 33.3333%;
   background: var(--gradient-main);
   border-radius: 2px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -352,6 +354,43 @@ textarea::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4p
 .empty-state {
   text-align: center; color: var(--text-muted);
   font-size: 13px; padding: 24px;
+}
+
+/* AI Smart Mode UI */
+.ai-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ai-btn {
+  font-size: 12px;
+  padding: 8px 6px;
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #e2e8f0;
+}
+.ai-btn:hover:not(:disabled) {
+  border-color: #a855f7;
+  background: rgba(168, 85, 247, 0.1);
+  color: white;
+}
+.ai-btn-wide {
+  grid-column: span 2;
+}
+.ai-output-container {
+  position: relative;
+}
+#aiOutputText {
+  height: 120px;
+}
+.spinner-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center; justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(2px);
 }
 
 /* App Toast Notif */
