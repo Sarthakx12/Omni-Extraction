@@ -10,7 +10,7 @@ OmniExtract is a modern, lightweight Google Chrome extension designed to instant
 - **Precision Selection Mode**: Visually drag and drop across a webpage with an interactive crosshair to isolate precise text nodes and visual assets.
 - **Bulk Page Extraction**: Safely scrape and compile all visible text and raw image URLs instantly from any given context window.
 - **Smart AI Tools**: Native connection to `gemini-2.0-flash` capable of summarizing, identifying key points, and drafting immediate social media posts based on your highlights.
-- **One-Click Exports**: ZIP up dynamically downloaded image blobs and `.txt` files securely via your browser's native protocol.
+- **One-Click Exports**: Generate clean, structured PDFs from your extracted data, or ZIP up dynamically downloaded image blobs and `.txt` files securely via your browser's native protocol.
 
 ## ⚙️ How to Install (Local Sideloading)
 
